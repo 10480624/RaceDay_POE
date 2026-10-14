@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
             Email = email,
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
-            Role = "Participant"
+            Role = request.Role
         };
 
         user.PasswordHash = _passwordHasher.HashPassword(
