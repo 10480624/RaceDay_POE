@@ -23,4 +23,148 @@ Commit History  A minimum of 20 meaningful commits is required per part. Commits
 
 Academic Integrity  This project was planned and designed with the support of AI tools for brainstorming and structure. All design decisions, entity relationships, and endpoint logic were reviewed, understood, and validated by the author before submission. AI assistance is disclosed here in accordance with the assignment requirements.
 
+Part 2
+
+Part 2: API Development
+
+Part 2 of the RaceDay project focuses on developing the backend API for the event management system. The API provides endpoints for managing event-related information and supports authentication and role-based access control.
+
+The application is developed using ASP.NET Core Web API, C#, Entity Framework Core, and Microsoft SQL Server. Swagger is used to document the API endpoints and support manual testing.
+
+The implementation builds on the database design and planning completed in Part 1.
+
+Part 2 Objectives
+
+- Develop REST API endpoints for the RaceDay application.
+- Connect the API to the SQL Server database using Entity Framework Core.
+- Implement JWT bearer authentication.
+- Apply role-based authorization to protected endpoints.
+- Validate incoming requests and handle common errors.
+- Implement and test event enrolment functionality.
+- Create automated tests for selected API behaviour.
+- Configure a GitHub Actions workflow to build the project and run automated tests.
+
+
+Technologies and Tools
+
+The following technologies are used in the Part 2 implementation:
+
+- **Programming language:** C#
+- **Framework:** ASP.NET Core Web API
+- **Target framework:** .NET 10
+- **Database:** Microsoft SQL Server Express
+- **Object-relational mapping:** Entity Framework Core
+- **Authentication:** JSON Web Token (JWT) bearer authentication
+- **API documentation and testing:** Swagger / OpenAPI
+- **Automated testing:** .NET test project with Entity Framework Core InMemory for the enrolment unit test
+- **Version control:** Git and GitHub
+- **Continuous integration:** GitHub Actions
+
+
+API Functionality
+
+The RaceDay API provides backend functionality for the event management system. Its implementation includes authentication and protected operations for event enrolments.
+
+Authentication and Authorization
+
+The API uses JWT bearer authentication to identify authenticated users. Role-based authorization restricts access to endpoints according to the user's role.
+
+The enrolment controller restricts access to participants. Organisers and other unauthorized roles cannot access participant-only enrolment operations.
+
+Event Enrolments
+
+The enrolment functionality supports creating an enrolment and retrieving the authenticated participant's enrolments.
+
+The API validates enrolment requests and handles relevant error conditions, including:
+
+- Successful enrolment creation.
+- Duplicate enrolment attempts.
+- Invalid event and category combinations.
+- References to events or categories that do not exist.
+- Unauthorized access to participant-only operations.
+
+The API returns appropriate HTTP status codes for these outcomes, including `201 Created`, `200 OK`, `400 Bad Request`, `403 Forbidden`, `404 Not Found`, and `409 Conflict`, depending on the request and its result.
+
+Other functionality should be documented according to the endpoints implemented and verified in the project.
+
+
+Database Configuration
+
+The application uses Microsoft SQL Server and Entity Framework Core to access the RaceDay database.
+
+Before running the application, ensure that:
+
+1. SQL Server is installed and running.
+2. The RaceDay database has been created using the supplied database script or the applicable project setup process.
+3. The database connection string is configured for the local SQL Server instance.
+4. The required JWT configuration values are supplied.
+
+The application reads its database connection string and JWT settings from configuration. These include the database connection string, `Jwt:Key`, `Jwt:Issuer`, and `Jwt:Audience`.
+
+**Security note:** Do not commit real passwords, production connection strings, or JWT signing keys to the repository. Use local development configuration or an appropriate secrets-management method.
+
+Running the API
+
+Open a terminal in the repository directory and run:
+
+```powershell
+dotnet restore
+dotnet build
+dotnet run --project .\RaceDay.Api\RaceDay.Api.csproj
+```
+
+When the application is running on the configured local port, open Swagger in a browser:
+
+http://localhost:5170/swagger
+
+The actual address may differ if the application uses another configured port.
+
+Swagger can be used to inspect available endpoints and manually test requests. For endpoints requiring authentication, provide a valid JWT using the Swagger Authorize function.
+
+
+Testing
+
+The project includes a .NET test project for automated testing of selected application behaviour.
+
+The enrolment unit test checks that an attempt to enrol a participant in the same event more than once returns a conflict response and does not create another enrolment.
+
+Run the automated tests from the repository directory using:
+
+```powershell
+dotnet test .\RaceDay.Tests\RaceDay.Tests.csproj
+```
+
+The tests should complete successfully before changes are considered ready for submission.
+
+Continuous Integration
+
+GitHub Actions is configured to run a build-and-test workflow when changes are pushed to the `main` branch or when a pull request targets that branch.
+
+The workflow performs the following steps:
+
+1. Checks out the repository.
+2. Sets up the .NET SDK.
+3. Restores project dependencies.
+4. Builds the test project and its referenced application project.
+5. Runs the automated tests.
+
+This workflow provides an automated check that the project can build and that its configured tests pass in the CI environment.
+
+The latest workflow result should be checked on GitHub before submission.
+
+
+
+Video Presentation
+
+**Presentation link:** [Replace this text with the actual unlisted YouTube video URL]
+
+The video presentation should demonstrate the implemented functionality and explain the relevant technical decisions. The demonstration should reflect what is working in the submitted version of the project.
+
+Academic Integrity and AI Disclosure
+
+AI tools were used to support parts of the development and documentation process. The submitted implementation and explanations should be reviewed and understood by the author, and any AI-assisted code or content should be disclosed in the manner required by the assessment brief.
+
+The final submission should accurately distinguish between functionality that has been implemented and tested and functionality that remains incomplete.
+
+
 Author  Name: Tumisang Moipolai Student Number: ST10480624  Module: PROG6212 - Programming 2B  Institution: IIE Varsity College  
