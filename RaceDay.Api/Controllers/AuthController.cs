@@ -28,6 +28,18 @@ public class AuthController : ControllerBase
     [HttpPost("register")]
     public async Task<IActionResult> Register(RegisterRequest request)
     {
+        // Public registration is restricted to Participants.
+        if (!string.Equals(
+                request.Role,
+                "Participant",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new
+            {
+                message = "Public registration is only available for Participants."
+            });
+        }
+
         var email = request.Email.Trim().ToLowerInvariant();
 
         var emailExists = await _context.Users
@@ -35,7 +47,10 @@ public class AuthController : ControllerBase
 
         if (emailExists)
         {
-            return Conflict(new { message = "An account with this email already exists." });
+            return Conflict(new
+            {
+                message = "An account with this email already exists."
+            });
         }
 
         var user = new User
@@ -43,7 +58,7 @@ public class AuthController : ControllerBase
             Email = email,
             FirstName = request.FirstName.Trim(),
             LastName = request.LastName.Trim(),
-            Role = request.Role
+            Role = "Participant"
         };
 
         user.PasswordHash = _passwordHasher.HashPassword(
@@ -62,7 +77,6 @@ public class AuthController : ControllerBase
         });
     }
 
-
     [HttpPost("login")]
     public async Task<IActionResult> Login(LoginRequest request)
     {
@@ -73,7 +87,10 @@ public class AuthController : ControllerBase
 
         if (user == null)
         {
-            return Unauthorized(new { message = "Invalid email or password." });
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
         }
 
         var passwordResult = _passwordHasher.VerifyHashedPassword(
@@ -81,7 +98,10 @@ public class AuthController : ControllerBase
 
         if (passwordResult == PasswordVerificationResult.Failed)
         {
-            return Unauthorized(new { message = "Invalid email or password." });
+            return Unauthorized(new
+            {
+                message = "Invalid email or password."
+            });
         }
 
         var configuration = HttpContext.RequestServices
@@ -90,19 +110,24 @@ public class AuthController : ControllerBase
         var key = configuration["Jwt:Key"]!;
         var issuer = configuration["Jwt:Issuer"]!;
         var audience = configuration["Jwt:Audience"]!;
-        var expiryMinutes = int.Parse(configuration["Jwt:ExpiryMinutes"]!);
+        var expiryMinutes = int.Parse(
+            configuration["Jwt:ExpiryMinutes"]!);
 
         var claims = new[]
         {
-            new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new Claim(
+                ClaimTypes.NameIdentifier,
+                user.UserId.ToString()),
             new Claim(ClaimTypes.Email, user.Email),
             new Claim(ClaimTypes.Role, user.Role)
         };
 
-        var signingKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(key));
+        var signingKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(key));
 
         var credentials = new SigningCredentials(
-            signingKey, SecurityAlgorithms.HmacSha256);
+            signingKey,
+            SecurityAlgorithms.HmacSha256);
 
         var token = new JwtSecurityToken(
             issuer: issuer,
