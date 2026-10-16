@@ -1,149 +1,227 @@
 
-RaceDay - Event Management System PROG6212 - Portfolio of Evidence - Part 1 Author: Tumisang Moipolai Student Number: ST10480624 Date: 2026-09-03
+RaceDay — Event Management System
+Module: PROG6212 — Programming 2B
+Portfolio of Evidence: Part 1 and Part 2
+Author: Tumisang Moipolai
+Student number: ST10480624
+Repository: https://github.com/10480624/RaceDay_POE
 
-System Description RaceDay is a full-stack web-based event management system designed for the South African road running, walking, and cycling community. The platform allows Event Organisers to create and manage races, define categories, capture participant results, and communicate with entrants. Participants can browse upcoming events, enrol by selecting a category, track their personal performance history, and receive event notifications. The system is built progressively across three parts: Part 1 (Current): System planning ERD, API endpoint plan, and SQL database schema. Part 2: RESTful API development in ASP.NET Core with Entity Framework, role-based authentication, unit testing, and CI/CD. Part 3: MVC web application consuming the API, Azure Blob Storage integration, and Docker containerisation.
+1. Project Overview
+RaceDay is a web-based event management system for the South African road-running, walking, and cycling community. Its intended functionality allows event organisers to create and manage events, define event categories, manage enrolments, record race results, and communicate updates to participants. Participants can browse events, enrol in an event category, view their own enrolments and results, and maintain their profile.
 
-User Roles
-Organiser = Registers and logs in as an Organiser. - Creates, updates, and deletes events (name, description, date, location, distance, type). - Defines age and distance categories for each event. - Views all enrolments for their events. - Captures finish times and finishing positions after an event concludes. - Sends notifications to enrolled participants.
+The project is developed in stages:
 
-Participant - Registers and logs in as a Participant. - Browses all upcoming events with filtering options. - Enrols in an event by selecting a category. - Views their own enrolments and enrolment status. - Views their personal race results and finishing positions. - Updates their profile (date of birth, emergency contact, medical conditions, profile picture). - Receives and manages event notifications.
+Part 1 — Planning and database design: entity relationship design, API endpoint planning, and the SQL Server database schema.
+Part 2 — API development: ASP.NET Core Web API, Entity Framework Core, JWT authentication, role-based access control, automated tests, and continuous integration.
+Part 3 — Planned extension: an MVC web application consuming the API, Azure Blob Storage integration, and Docker containerisation.
+This README describes the planned system and the Part 2 implementation. Where a planned feature has not been implemented or verified, that limitation is stated rather than presented as completed functionality.
 
-Part 1 Deliverables All planning documents are located in the /docs folder: 1. RaceDay_ERD.png â€” Entity Relationship Diagram showing all 7 entities, primary keys, foreign keys, and cardinalities. 2. API_Endpoint_Plan.md â€” Complete RESTful API endpoint specification with 28 endpoints, role requirements, request bodies, and expected responses. 3. RaceDay_Database.sql â€” Full SQL Server database script including CREATE TABLE statements with constraints, foreign keys, and realistic seed data.
+2. User Roles
+Organiser
+The intended Organiser role is responsible for managing events. Planned capabilities include:
 
-Database Design Decisions, Why 7 entities? The brief requires a minimum of 6 entities. The core 6 are Users, Profiles, Events, Categories, Enrolments, and Results. A 7th entity "Notifications" was added to demonstrate extended system thinking without scope explosion. Notifications allow Organisers to broadcast updates to participants, addressing the brief's mention of disconnected communication channels. Why one Users table with a role column? Both Organisers and Participants need the same login fields (email, password hash, name). Creating separate tables would duplicate these columns and violate normalisation. A single Users table with a role column keeps the design clean while a separate Profiles table stores role-agnostic personal information. Why BIT instead of INT for boolean flags? SQL Server's BIT type stores 0/1 in a single bit, making it the correct professional choice for true/false flags like is_read. Using INT would waste 31 bits per row. Why ON DELETE CASCADE on all foreign keys? Child records (Categories, Enrolments, Results, Notifications) only exist because of their parent records (Events, Users). If an Event is deleted, its Categories and Enrolments become meaningless. CASCADE automatically cleans up these dependencies, preventing orphaned records and maintaining referential integrity.
+Creating events and updating or deleting events they own.
+Defining categories for events.
+Viewing enrolments for their events.
+Recording and updating results for eligible enrolments.
+Sending event-related notifications to participants.
+In the current API, event creation, updating, and deletion are restricted to the Organiser role. Event ownership checks are applied to event updates and deletions. The implemented results endpoints also apply organiser-role and event-ownership checks.
 
-CI/CD Pipeline This repository uses GitHub Actions to validate that all Part 1 planning documents are present before any code is merged. CI/CD Green Build The workflow file is located at .github/workflows/validate-docs.yml. It checks: 1. The /docs folder exists. 2. The ERD image (.png or .pdf) is present. 3. The API Endpoint Plan (.md) is present. 4. The SQL Database Script (.sql) is present.
+Participant
+The intended Participant role is responsible for taking part in events. Planned capabilities include:
 
-Video Presentation A walkthrough of the Part 1 planning documents, ERD design decisions, API endpoint choices, and a live demonstration of the SQL script running in SSMS. YouTube Link: [Insert unlisted YouTube link here]
+Registering and logging in.
+Browsing available events.
+Enrolling in an event and selecting a category.
+Viewing their own enrolments and results.
+Viewing and updating personal profile information.
+Receiving and managing event notifications.
+Public registration is restricted to the Participant role. The current enrolment controller allows participants to create and retrieve their own enrolments. The available profile and results endpoints enforce authenticated access and ownership rules as implemented by those controllers.
 
-How to Run the SQL Script 1. Open SQL Server Management Studio (SSMS). 2. Connect to your SQL Server instance. 3. Open docs/RaceDay_Database.sql. 4. Execute the script (F5 or click Execute). 5. The script creates the RaceDay database, all 7 tables, constraints, and seed data. 6. Uncomment the verification queries at the bottom to inspect the seeded data.
+3. Part 1 — Planning and Database Design
+Part 1 established the database structure and the planned API contract that Part 2 builds on.
 
-Technologies Used (Planned for Parts 2 and 3) Backend API: ASP.NET Core Web API (C#) ORM: Entity Framework Core (Code-First) Database: Microsoft SQL Server Authentication: Session-based with password hashing API Documentation: Swagger / OpenAPI Frontend: ASP.NET Core MVC Cloud Storage: Azure Blob Storage **Containerisation: Docker CI/CD: GitHub Actions
+Database entities
+The database design contains seven core entities:
 
-Commit History A minimum of 20 meaningful commits is required per part. Commits reflect real development work â€” planning decisions, document updates, and iterative refinements.
+Users — account details and role information.
+Profiles — additional personal and emergency-contact information.
+Events — event details and organiser ownership.
+Categories — categories associated with events.
+Enrolments — participant registrations for event categories.
+Results — finishing time and finishing position for an enrolment.
+Notifications — event-related messages and read status.
+Design decisions
+One Users table with a role column: Organisers and Participants share account fields, so a common Users table avoids duplicating account data. A separate Profiles table stores additional personal information.
+A separate Profiles entity: profile details are kept apart from core authentication information.
+SQL Server BIT for Boolean values: this is appropriate for true/false flags such as a notification's read status.
+Referential integrity: primary keys, foreign keys, and constraints maintain valid relationships between related records. Delete behaviour should be considered for each relationship so dependent data is handled consistently with application requirements.
+Part 1 artefacts
+The repository includes the planning and database artefacts at the paths present in the repository, including:
 
-Academic Integrity This project was planned and designed with the support of AI tools for brainstorming and structure. All design decisions, entity relationships, and endpoint logic were reviewed, understood, and validated by the author before submission. AI assistance is disclosed here in accordance with the assignment requirements.
+API_Endpoint_Plan.md — planned endpoints, access requirements, and expected behaviour.
+RaceDay_Database.sql — SQL Server database creation script.
+RaceDay_ERD.drawio.pdf — entity relationship diagram, if present at the repository root.
+Check the repository tree for the current location of each artefact before submission; older Part 1 documentation may refer to a /docs folder or image format that does not match the current file layout.
 
-Part 2
+4. Part 2 — API Technologies
+Area	Technology
+Language	C#
+Framework	ASP.NET Core Web API
+Target framework	.NET 10
+Database	Microsoft SQL Server Express
+Data access	Entity Framework Core
+Authentication	JSON Web Token (JWT) bearer authentication
+API documentation	Swagger / OpenAPI
+Automated testing	xUnit and Entity Framework Core InMemory
+Version control	Git and GitHub
+Continuous integration	GitHub Actions
+5. Implemented API Functionality
+The API uses Entity Framework Core to access the RaceDay database. JWT bearer authentication identifies authenticated users, and role-based authorization restricts access to protected endpoints.
 
-Part 2: API Development
+Authentication
+The authentication controller provides:
 
-Part 2 of the RaceDay project focuses on developing the backend API for the event management system. The API provides endpoints for managing event-related information and supports authentication and role-based access control.
-
-The application is developed using ASP.NET Core Web API, C#, Entity Framework Core, and Microsoft SQL Server. Swagger is used to document the API endpoints and support manual testing.
-
-The implementation builds on the database design and planning completed in Part 1.
-
-Part 2 Objectives
-
-Develop REST API endpoints for the RaceDay application.
-Connect the API to the SQL Server database using Entity Framework Core.
-Implement JWT bearer authentication.
-Apply role-based authorization to protected endpoints.
-Validate incoming requests and handle common errors.
-Implement and test event enrolment functionality.
-Create automated tests for selected API behaviour.
-Configure a GitHub Actions workflow to build the project and run automated tests.
-Technologies and Tools
-
-The following technologies are used in the Part 2 implementation:
-
-Programming language: C#
-Framework: ASP.NET Core Web API
-Target framework: .NET 10
-Database: Microsoft SQL Server Express
-Object-relational mapping: Entity Framework Core
-Authentication: JSON Web Token (JWT) bearer authentication
-API documentation and testing: Swagger / OpenAPI
-Automated testing: .NET test project with Entity Framework Core InMemory for the enrolment unit test
-Version control: Git and GitHub
-Continuous integration: GitHub Actions
-API Functionality
-The RaceDay API is developed using ASP.NET Core Web API, C#, Entity Framework Core, and Microsoft SQL Server. JWT bearer authentication identifies authenticated users, while role-based authorization restricts access to protected operations.
-
-Authentication and Authorization
-The API provides registration and login endpoints. A logout endpoint specified in the Part 1 API plan has not been confirmed as implemented. Protected endpoints require a valid JWT, and access is restricted according to the user's role.
+POST /api/auth/register — registers a Participant account.
+POST /api/auth/login — validates credentials and returns a JWT for successful authentication.
+Registration normalises email addresses and rejects duplicate accounts. Passwords are hashed rather than stored as plain text. Public registration does not allow users to create an Organiser account. A logout endpoint was listed in the Part 1 plan but is not implemented in the current controller.
 
 Profiles
-Authenticated users can retrieve and update their profile through GET /api/profile and PUT /api/profile. These routes differ from the /api/users/profile routes specified in the Part 1 API plan.
+The profile controller provides:
 
-Events and Categories
-The API provides event listing, event details, and organiser-restricted event creation, updating, and deletion. Category listing and creation are available through routes nested under /api/events/{eventId}/categories. The full category-management functionality specified in Part 1 has not been confirmed as implemented.
+GET /api/profile — retrieves the authenticated user's profile.
+PUT /api/profile — updates the authenticated user's profile.
+The controller uses the authenticated user's identity and supports profile information such as name, date of birth, emergency contact details, medical conditions, and profile-picture URL. The implemented route is /api/profile, which differs from the /api/users/profile route in the Part 1 plan.
+
+Events
+The event controller provides:
+
+GET /api/events — lists events.
+GET /api/events/{id} — retrieves an event by ID.
+POST /api/events — creates an event; Organiser access is required.
+PUT /api/events/{id} — updates an event; Organiser access and event ownership are checked.
+DELETE /api/events/{id} — deletes an event; Organiser access and event ownership are checked.
+Event creation validates required information such as the event name and location, date, distance, and event type. Deletion is prevented when enrolments exist for the event.
+
+Categories
+The category controller provides category listing and creation under the nested route:
+
+GET /api/events/{eventId}/categories
+POST /api/events/{eventId}/categories — restricted to Organisers.
+The full category-management set described in the Part 1 plan, including category update and deletion endpoints, has not been confirmed as implemented.
 
 Enrolments
-Participants can create enrolments and retrieve their own enrolments. The API validates enrolment requests and handles duplicate enrolment attempts, invalid event/category combinations, and references to events or categories that do not exist. Additional enrolment-management endpoints specified in Part 1 remain to be reviewed or implemented.
+The enrolment controller provides:
+
+GET /api/enrolments — retrieves the authenticated Participant's enrolments.
+POST /api/enrolments — creates a Participant enrolment.
+The controller checks enrolment requests and handles duplicate enrolment attempts and invalid or missing event/category references. The controller is restricted to the Participant role. Several enrolment-management endpoints from the Part 1 plan, including organiser event-enrolment views, status updates, individual enrolment retrieval, and participant cancellation, are not present in the current controller.
 
 Results
-The results controller provides endpoints to retrieve results, retrieve an individual result, record a result, and update a result. Access is restricted according to participant ownership and event-organiser ownership. Recording a result requires a completed enrolment. The results endpoints have built successfully, but their runtime behaviour should be tested before it is described as verified.
+The results controller provides:
 
-Notifications and API Plan Differences
-The notification functionality and other endpoints listed in the Part 1 API plan remain subject to an implementation review. Known differences include the profile route naming and the absence of several planned endpoints. The implementation should not be described as fully matching the Part 1 plan until all planned routes, permissions, and behaviours have been checked. Any remaining deviations should be documented with their reasons.
+GET /api/results — retrieves results visible to the authenticated user.
+GET /api/results/{id} — retrieves a result by ID, subject to access checks.
+POST /api/results — records a result; Organiser access and event ownership are checked.
+PUT /api/results/{id} — updates a result; Organiser access and event ownership are checked.
+Participant result access is restricted to the participant's own results, while organisers are restricted to results associated with their events. Result creation validates the enrolment, finishing time, and finishing position, and requires the enrolment status to be Completed. Because a complete enrolment-status workflow has not been confirmed in the current API, this prerequisite should be checked during runtime verification.
 
-Database Configuration
+Notifications
+Notifications are part of the planned database design and Part 1 API plan. A complete Notifications API controller has not been confirmed in the current implementation. Notification endpoints should therefore not be treated as implemented functionality.
 
-The application uses Microsoft SQL Server and Entity Framework Core to access the RaceDay database.
+API plan deviations
+The current implementation does not yet fully match every endpoint in the Part 1 plan. Known differences include:
 
-Before running the application, ensure that:
+The profile route is /api/profile rather than /api/users/profile.
+Authentication includes registration and login, but no logout endpoint.
+Category management is incomplete compared with the planned endpoint set.
+Enrolment management includes listing a participant's enrolments and creating enrolments, but not every planned management route.
+Notifications endpoints have not been confirmed as implemented.
+The planned organiser-specific event-list route has not been confirmed as implemented.
+The endpoint plan and controllers should be compared before submission, and these differences should be explained honestly in the assessment. Do not claim that all planned endpoints are complete.
 
-SQL Server is installed and running.
-The RaceDay database has been created using the supplied database script or the applicable project setup process.
-The database connection string is configured for the local SQL Server instance.
-The required JWT configuration values are supplied.
-The application reads its database connection string and JWT settings from configuration. These include the database connection string, Jwt:Key, Jwt:Issuer, and Jwt:Audience.
+6. Database Configuration
+The API is configured to use Microsoft SQL Server Express with a local instance such as (local)\SQLEXPRESS. The development database is named RaceDay. The connection string is read from application configuration. The current development configuration uses a connection string in this form:
 
-Security note: Do not commit real passwords, production connection strings, or JWT signing keys to the repository. Use local development configuration or an appropriate secrets-management method.
+Server=(local)\SQLEXPRESS;Database=RaceDay;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true
+Before running the API:
 
-Running the API
+Install and start SQL Server Express.
+Create the RaceDay database and required schema using the supplied SQL script or the database setup process used by the project.
+Confirm the connection string matches the SQL Server instance on your machine.
+Configure the JWT settings required by the application, including Jwt:Key, Jwt:Issuer, Jwt:Audience, and the configured expiry value.
+Security: the connection string above is intended for local development. Do not commit production passwords, real secrets, or production JWT signing keys to source control. Use user secrets or an appropriate environment-specific secret-management method for sensitive configuration. Any development signing key in the repository must be replaced before deployment.
 
-Open a terminal in the repository directory and run the API with file watching enabled:
+7. Running the API
+Run these commands from the repository root in PowerShell.
 
+Start the API
 dotnet watch --project .\RaceDay.Api\RaceDay.Api.csproj run
-dotnet watch monitors source files and rebuilds/restarts the API when applicable code changes are detected. Keep the terminal open while using Swagger. If you only want to build without running the API, stop the watcher with Ctrl+C and run dotnet build .\RaceDay.Api\RaceDay.Api.csproj.
+Keep this terminal open while using the API. dotnet watch monitors source files and rebuilds or restarts the application when applicable changes are detected.
 
-When the application is running on the configured local port, open Swagger in a browser:
+When the application is running on the configured local port, open Swagger:
 
 http://localhost:5170/swagger
 
-The actual address may differ if the application uses another configured port.
+The port may differ if the launch configuration or application settings have changed.
 
-Swagger can be used to inspect available endpoints and manually test requests. For endpoints requiring authentication, provide a valid JWT using the Swagger Authorize function.
+Use Swagger
+Open the Swagger URL.
+Expand an endpoint to inspect its request and response formats.
+Register a Participant account using the registration endpoint.
+Log in and copy the returned JWT.
+Select Authorize in Swagger and enter the bearer token as required by the Swagger configuration.
+Call protected endpoints using an account and role that are permitted to access them.
+Build without running
+Stop the API watcher with Ctrl+C, then run:
 
-Testing
+dotnet build .\RaceDay.Api\RaceDay.Api.csproj
+If a build is attempted while another process is using the build output, stop the running watcher first and retry.
 
-The project includes a .NET test project for automated testing of selected application behaviour.
+8. Automated Testing
+Automated tests are located in RaceDay.Tests. The test project uses xUnit and Entity Framework Core InMemory to test selected controller behaviour without changing the development SQL Server database.
 
-The enrolment unit test checks that an attempt to enrol a participant in the same event more than once returns a conflict response and does not create another enrolment.
+The current suite contains 10 tests covering:
 
-Run the automated tests from the repository directory using:
+Successful Participant registration, including email normalisation and password hashing.
+Rejection of duplicate email addresses.
+Rejection of public Organiser registration.
+Rejection of login attempts with an unknown email or incorrect password.
+Successful login with valid credentials and token generation.
+Event listing and handling of a missing event.
+Rejection of event creation when the organiser identity claim is missing.
+Prevention of duplicate Participant enrolments.
+Run the tests from the repository root:
 
 dotnet test .\RaceDay.Tests\RaceDay.Tests.csproj
-The tests should complete successfully before changes are considered ready for submission.
+The last recorded local run reported 10 passed, 0 failed, and 0 skipped. These are controller-level unit tests; they do not prove that every endpoint, HTTP middleware rule, role restriction, database integration, or end-to-end workflow has been tested.
 
-Continuous Integration
+9. Continuous Integration
+The repository has a GitHub Actions workflow named RaceDay Build and Tests. Its purpose is to restore dependencies, build the project, and run the automated test suite when the configured branch or pull-request triggers are met.
 
-GitHub Actions is configured to run a build-and-test workflow when changes are pushed to the main branch or when a pull request targets that branch.
+The last recorded GitHub Actions run for commit df19431 (Add profile and results endpoints and expand tests) completed successfully. Verify the latest workflow run on GitHub before submitting, especially after any subsequent code or workflow changes.
 
-The workflow performs the following steps:
+CI evidence screenshot: add the screenshot of the successful GitHub Actions run to the repository and link or embed it here once the screenshot has been saved in the repository. Do not leave an image link pointing to a file that has not been committed.
 
-Checks out the repository.
-Sets up the .NET SDK.
-Restores project dependencies.
-Builds the test project and its referenced application project.
-Runs the automated tests.
-This workflow provides an automated check that the project can build and that its configured tests pass in the CI environment.
+10. Video Demonstrations
+Part 1
+The Part 1 demonstration should explain the planning documents, ERD decisions, API endpoint plan, and execution of the SQL database script.
 
-The latest workflow result should be checked on GitHub before submission.
+Unlisted YouTube URL: Add the actual Part 1 video URL before submission.
 
-Video Presentation
+Part 2
+The Part 2 demonstration should show the API running, Swagger endpoint exploration, registration and login, use of a JWT for protected endpoints, representative event/enrolment/profile/results behaviour, automated tests, and the successful CI workflow. Demonstrate only functionality that works in the submitted version, and explain any known limitations.
 
-Presentation link: [Replace this text with the actual unlisted YouTube video URL]
+Unlisted YouTube URL: Add the actual Part 2 video URL before submission.
 
-The video presentation should demonstrate the implemented functionality and explain the relevant technical decisions. The demonstration should reflect what is working in the submitted version of the project.
+11. Commit History
+The assessment requires at least 20 meaningful commits per part. Commits should represent genuine incremental development, such as implementation changes, test additions, documentation improvements, and fixes. The commit history should be checked before submission to confirm that the required number of meaningful commits exists for each part.
 
-Academic Integrity and AI Disclosure
+12. Academic Integrity and AI Disclosure
+AI tools were used to support parts of the development and documentation process. The author is responsible for reviewing, understanding, testing, and validating the submitted implementation and for disclosing AI assistance in accordance with the assessment brief and institutional requirements. Any final disclosure should accurately describe the assistance used; it should not imply that AI-generated work was independently authored without assistance.
 
-AI tools were used to support parts of the development and documentation process. The submitted implementation and explanations should be reviewed and understood by the author, and any AI-assisted code or content should be disclosed in the manner required by the assessment brief.
-
-The final submission should accurately distinguish between functionality that has been implemented and tested and functionality that remains incomplete.
-
-Author Name: Tumisang Moipolai Student Number: ST10480624 Module: PROG6212 - Programming 2B Institution: IIE Varsity College
+13. Author
+Name: Tumisang Moipolai
+Student number: ST10480624
+Module: PROG6212 — Programming 2B
+Institution: IIE Varsity College
