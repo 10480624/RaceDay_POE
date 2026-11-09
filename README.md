@@ -810,3 +810,20 @@ Module: PROG6212 — Programming 2B
 
 Institution: IIE Varsity College
 
+## Part 3 Docker implementation
+
+A multi-stage `.NET 10` Dockerfile is provided at the repository root. It publishes the MVC application into the ASP.NET Core runtime image; the API and SQL Server remain separate services.
+
+Build from the repository root:
+
+```powershell
+docker build -t raceday-web .
+```
+
+Start the API on the host first, then run the MVC container:
+
+```powershell
+docker run --rm --name raceday-web -p 8080:8080 -e ApiBaseUrl=http://host.docker.internal:5170 raceday-web
+```
+
+Open `http://localhost:8080`. The API must be reachable from the container at `http://host.docker.internal:5170`. This Docker configuration has been added to source control; a successful image build and runtime test must still be confirmed on a machine with Docker installed.
