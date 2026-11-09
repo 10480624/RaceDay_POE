@@ -132,6 +132,10 @@ namespace RaceDay.Api.Migrations
                         .HasColumnType("date")
                         .HasColumnName("event_date");
 
+                    b.Property<string>("BannerImageUrl")
+                        .HasColumnType("varchar(500)")
+                        .HasColumnName("banner_image_url");
+
                     b.Property<string>("EventType")
                         .IsRequired()
                         .HasColumnType("varchar(20)")
