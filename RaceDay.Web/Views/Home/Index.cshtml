@@ -1,8 +1,68 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "RaceDay";
+    var role = Context.Session.GetString("Role");
+    var loggedIn = !string.IsNullOrEmpty(Context.Session.GetString("Token"));
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="raceday-hero mb-5">
+    <div class="row align-items-center">
+        <div class="col-lg-7">
+            <span class="text-uppercase fw-semibold text-primary small">RaceDay Events</span>
+            <h1 class="display-4 fw-bold mt-3">Every race starts with a first step.</h1>
+            <p class="lead text-secondary mt-3">
+                Discover running, walking and cycling events.
+                Register, take part and keep track of your results.
+            </p>
+            <div class="d-flex flex-wrap gap-2 mt-4">
+                <a asp-controller="Events" asp-action="Index"
+                   class="btn btn-primary btn-lg">Explore Events</a>
+
+                @if (!loggedIn)
+                {
+                    <a asp-controller="Account" asp-action="Register"
+                       class="btn btn-outline-dark btn-lg">Create Account</a>
+                }
+                else if (role == "Organiser")
+                {
+                    <a asp-controller="ManageEvents" asp-action="Index"
+                       class="btn btn-outline-dark btn-lg">Manage Events</a>
+                }
+                else
+                {
+                    <a asp-controller="Enrolments" asp-action="Index"
+                       class="btn btn-outline-dark btn-lg">My Enrolments</a>
+                }
+            </div>
+        </div>
+        <div class="col-lg-5 mt-5 mt-lg-0">
+            <div class="hero-panel">
+                <div class="hero-number">01</div>
+                <h3>Find your next event</h3>
+                <p class="text-secondary mb-0">
+                    Browse available events and choose the category that suits you.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Discover Events</h5>
+            <p class="text-secondary mb-0">Explore upcoming races by location, date and event type.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Manage Enrolments</h5>
+            <p class="text-secondary mb-0">Keep your event registrations and participation details together.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="feature-card h-100">
+            <h5>Track Results</h5>
+            <p class="text-secondary mb-0">View recorded finishing times and positions.</p>
+        </div>
+    </div>
 </div>

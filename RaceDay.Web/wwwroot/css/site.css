@@ -1,31 +1,180 @@
 html {
-  font-size: 14px;
-}
-
-@media (min-width: 768px) {
-  html {
     font-size: 16px;
-  }
-}
-
-.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
-  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
-}
-
-html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
-  margin-bottom: 60px;
+    margin: 0;
+    margin-bottom: 60px;
+    background: #f7f8fa;
+    color: #202733;
 }
 
-.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
-  color: var(--bs-secondary-color);
-  text-align: end;
+.navbar {
+    background: #172334 !important;
+    padding: 1rem 0;
 }
 
-.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
-  text-align: start;
+.navbar-brand {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.nav-link {
+    font-weight: 500;
+}
+
+h1, h2, h3, h4, h5 {
+    color: #172334;
+    letter-spacing: -0.5px;
+}
+
+.btn {
+    border-radius: 7px;
+    font-weight: 600;
+    padding: 0.55rem 1rem;
+}
+
+.btn-primary {
+    background: #2457a6;
+    border-color: #2457a6;
+}
+
+.btn-primary:hover {
+    background: #19447f;
+    border-color: #19447f;
+}
+
+.form-control, .form-select {
+    border-radius: 7px;
+    padding: 0.7rem 0.8rem;
+    border-color: #dce1e8;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #2457a6;
+    box-shadow: 0 0 0 0.2rem rgba(36, 87, 166, 0.12);
+}
+
+.raceday-hero {
+    background: #ffffff;
+    border: 1px solid #e6e9ef;
+    border-radius: 14px;
+    padding: 4rem 3rem;
+}
+
+.hero-panel {
+    background: #f1f5fa;
+    border: 1px solid #e1e8f1;
+    border-radius: 12px;
+    padding: 2rem;
+}
+
+.hero-number {
+    color: #2457a6;
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+}
+
+.feature-card, .filter-panel, .content-panel, .empty-state {
+    background: #ffffff;
+    border: 1px solid #e6e9ef;
+    border-radius: 10px;
+    padding: 1.5rem;
+}
+
+.event-card {
+    border: 1px solid #e6e9ef;
+    border-radius: 10px;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.event-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 22px rgba(20, 35, 55, 0.08);
+}
+
+.event-type-label {
+    display: inline-block;
+    width: fit-content;
+    padding: 0.3rem 0.65rem;
+    border-radius: 5px;
+    background: #edf3fb;
+    color: #2457a6;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.event-details p {
+    margin-bottom: 0.4rem;
+    color: #5d6877;
+}
+
+.page-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.status-badge {
+    display: inline-block;
+    padding: 0.35rem 0.65rem;
+    border-radius: 5px;
+    font-size: 0.8rem;
+    font-weight: 700;
+}
+
+.status-completed {
+    color: #17633b;
+    background: #e5f4eb;
+}
+
+.status-pending {
+    color: #805a13;
+    background: #fff3d8;
+}
+
+.status-cancelled {
+    color: #9b2c2c;
+    background: #fce8e8;
+}
+
+.table thead th {
+    color: #566273;
+    background: #f5f7fa;
+    font-size: 0.85rem;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+.table td, .table th {
+    padding: 0.9rem;
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+footer {
+    background: #ffffff;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .raceday-hero {
+        padding: 2rem 1.25rem;
+    }
+
+    .page-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
 }

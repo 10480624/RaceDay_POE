@@ -4,46 +4,65 @@
     ViewData["Title"] = "My Enrolments";
 }
 
-<h1>My Enrolments</h1>
+<div class="page-heading mb-4">
+    <div>
+        <h1>My Enrolments</h1>
+        <p class="text-secondary">View your event registrations and their current status.</p>
+    </div>
+    <a asp-controller="Events" asp-action="Index" class="btn btn-primary">
+        Browse Events
+    </a>
+</div>
 
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success">@TempData["Message"]</div>
 }
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
 
 @if (!Model.Any())
 {
-    <div class="alert alert-info">
-        You have not enrolled in any events yet.
+    <div class="empty-state">
+        <h4>No enrolments yet</h4>
+        <p class="text-secondary">Browse available events to get started.</p>
+        <a asp-controller="Events" asp-action="Index" class="btn btn-primary">Browse Events</a>
     </div>
 }
 else
 {
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Enrolment ID</th>
-                <th>Event ID</th>
-                <th>Category ID</th>
-                <th>Date Enrolled</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="table-responsive content-panel">
+        <table class="table align-middle mb-0">
+            <thead>
+                <tr>
+                    <th>Enrolment</th>
+                    <th>Event ID</th>
+                    <th>Category ID</th>
+                    <th>Date Enrolled</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
             @foreach (var item in Model)
             {
+                var statusClass = item.Status?.ToLowerInvariant() switch
+                {
+                    "completed" => "status-completed",
+                    "cancelled" => "status-cancelled",
+                    _ => "status-pending"
+                };
+
                 <tr>
-                    <td>@item.EnrolmentId</td>
+                    <td>#@item.EnrolmentId</td>
                     <td>@item.EventId</td>
                     <td>@item.CategoryId</td>
                     <td>@item.EnrolmentDate.ToString("dd MMM yyyy")</td>
-                    <td>@item.Status</td>
+                    <td><span class="status-badge @statusClass">@item.Status</span></td>
                 </tr>
             }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
 }
-
-<a asp-controller="Events" asp-action="Index" class="btn btn-primary">
-    Browse Events
-</a>
