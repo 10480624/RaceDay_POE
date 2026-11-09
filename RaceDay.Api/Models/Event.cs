@@ -10,6 +10,7 @@ public class Event
     public string Location { get; set; } = string.Empty;
     public decimal Distance { get; set; }
     public string EventType { get; set; } = string.Empty;
+    public string? BannerImageUrl { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public User Organiser { get; set; } = null!;
