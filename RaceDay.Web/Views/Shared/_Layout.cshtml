@@ -26,6 +26,7 @@
                         @if (Context.Session.GetString("Role") == "Organiser")
                         {
                             <li class="nav-item">
+                                <a class="nav-link" asp-controller="ManageEvents" asp-action="Dashboard">Dashboard</a>
                                 <a class="nav-link" asp-controller="ManageEvents" asp-action="Index">Manage Events</a>
                             </li>
                         }
