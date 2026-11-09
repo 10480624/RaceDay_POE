@@ -58,6 +58,7 @@ public class EventsController : ControllerBase
                 e.Location,
                 e.Distance,
                 e.EventType,
+                e.BannerImageUrl,
                 e.OrganiserId
             })
             .SingleOrDefaultAsync();
