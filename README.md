@@ -810,7 +810,7 @@ Module: PROG6212 — Programming 2B
 
 Institution: IIE Varsity College
 
-## Part 3 Docker implementation
+Part 3 Docker implementation
 
 A multi-stage `.NET 10` Dockerfile is provided at the repository root. It publishes the MVC application into the ASP.NET Core runtime image; the API and SQL Server remain separate services.
 
