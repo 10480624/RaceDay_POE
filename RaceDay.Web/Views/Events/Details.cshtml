@@ -1,0 +1,84 @@
+@model RaceDay.Web.Models.EventViewModel
+
+@{
+    ViewData["Title"] = "Event Details";
+}
+
+<h1>@Model.Name</h1>
+
+<div class="card shadow-sm mt-3 mb-4">
+    <div class="card-body">
+        <p>@Model.Description</p>
+        <p><strong>Date:</strong> @Model.EventDate.ToString("dd MMMM yyyy HH:mm")</p>
+        <p><strong>Location:</strong> @Model.Location</p>
+        <p><strong>Distance:</strong> @Model.Distance km</p>
+        <p><strong>Event type:</strong> @Model.EventType</p>
+    </div>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<h2>Available Categories</h2>
+
+@if (!Model.Categories.Any())
+{
+    <div class="alert alert-info">
+        No categories are currently available for this event.
+    </div>
+}
+else
+{
+    <div class="row">
+        @foreach (var category in Model.Categories)
+        {
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5>@category.CategoryName</h5>
+
+                        @if (!string.IsNullOrWhiteSpace(category.AgeRange))
+                        {
+                            <p><strong>Age range:</strong> @category.AgeRange</p>
+                        }
+
+                        @if (category.Distance.HasValue)
+                        {
+                            <p><strong>Distance:</strong> @category.Distance km</p>
+                        }
+
+                        @if (Context.Session.GetString("Role") == "Participant")
+                        {
+                            <form asp-controller="Enrolments"
+                                  asp-action="Create"
+                                  method="post">
+                                <input type="hidden" name="eventId" value="@Model.EventId" />
+                                <input type="hidden" name="categoryId" value="@category.CategoryId" />
+                                <button type="submit" class="btn btn-primary">
+                                    Enrol Now
+                                </button>
+                            </form>
+                        }
+                        else if (Context.Session.GetString("Token") == null)
+                        {
+                            <a asp-controller="Account"
+                               asp-action="Login"
+                               class="btn btn-outline-primary">
+                                Login to Enrol
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Back to Events</a>

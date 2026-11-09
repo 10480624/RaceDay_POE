@@ -1,0 +1,54 @@
+@model RaceDay.Web.Models.EditResultViewModel
+
+@{
+    ViewData["Title"] = "Edit Result";
+}
+
+<h1>Edit Event Result</h1>
+
+<div class="card">
+    <div class="card-body">
+        <form asp-controller="Results" asp-action="Edit" method="post">
+
+            <div asp-validation-summary="ModelOnly"
+                 class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="ResultId" />
+
+            <div class="mb-3">
+                <label asp-for="FinishTime" class="form-label">
+                    Finishing Time (HH:mm:ss)
+                </label>
+                <input asp-for="FinishTime"
+                       type="text"
+                       class="form-control"
+                       placeholder="01:25:30" />
+                <span asp-validation-for="FinishTime"
+                      class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="FinishingPosition" class="form-label">
+                    Finishing Position
+                </label>
+                <input asp-for="FinishingPosition"
+                       type="number"
+                       min="1"
+                       class="form-control"
+                       placeholder="1" />
+                <span asp-validation-for="FinishingPosition"
+                      class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+                Update Result
+            </button>
+
+            <a asp-controller="Results"
+               asp-action="Index"
+               class="btn btn-secondary">
+                Cancel
+            </a>
+        </form>
+    </div>
+</div>

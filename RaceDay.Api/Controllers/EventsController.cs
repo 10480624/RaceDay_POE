@@ -67,6 +67,102 @@ public class EventsController : ControllerBase
         return Ok(eventItem);
     }
 
+    // Organisers can view enrolments for their own events.
+    [HttpGet("{id:int}/enrolments")]
+    [Authorize(Roles = "Organiser")]
+    public async Task<IActionResult> GetEventEnrolments(int id)
+    {
+        var organiserId = GetOrganiserId();
+
+        if (organiserId == null)
+            return Unauthorized();
+
+        var eventItem = await _context.Events
+            .AsNoTracking()
+            .SingleOrDefaultAsync(e => e.EventId == id);
+
+        if (eventItem == null)
+            return NotFound();
+
+        if (eventItem.OrganiserId != organiserId.Value)
+            return Forbid();
+
+        var enrolments = await _context.Enrolments
+            .AsNoTracking()
+            .Where(e => e.EventId == id)
+            .OrderBy(e => e.EnrolmentDate)
+            .Select(e => new
+            {
+                e.EnrolmentId,
+                e.UserId,
+                e.EventId,
+                e.CategoryId,
+                CategoryName = e.Category.CategoryName,
+                e.EnrolmentDate,
+                e.Status
+            })
+            .ToListAsync();
+
+        return Ok(enrolments);
+    }
+
+    // Organisers can mark enrolments in their own events as completed.
+    [HttpPut("{eventId:int}/enrolments/{enrolmentId:int}/complete")]
+    [Authorize(Roles = "Organiser")]
+    public async Task<IActionResult> CompleteEnrolment(
+        int eventId,
+        int enrolmentId)
+    {
+        var organiserId = GetOrganiserId();
+
+        if (organiserId == null)
+            return Unauthorized();
+
+        var eventItem = await _context.Events
+            .SingleOrDefaultAsync(e => e.EventId == eventId);
+
+        if (eventItem == null)
+            return NotFound(new { message = "Event not found." });
+
+        if (eventItem.OrganiserId != organiserId.Value)
+            return Forbid();
+
+        var enrolment = await _context.Enrolments
+            .SingleOrDefaultAsync(e =>
+                e.EnrolmentId == enrolmentId &&
+                e.EventId == eventId);
+
+        if (enrolment == null)
+        {
+            return NotFound(new
+            {
+                message = "Enrolment not found for this event."
+            });
+        }
+
+        if (string.Equals(
+                enrolment.Status,
+                "Completed",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            return BadRequest(new
+            {
+                message = "This enrolment is already completed."
+            });
+        }
+
+        enrolment.Status = "Completed";
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            enrolment.EnrolmentId,
+            enrolment.EventId,
+            enrolment.Status
+        });
+    }
+
     [HttpPost]
     [Authorize(Roles = "Organiser")]
     public async Task<IActionResult> CreateEvent(

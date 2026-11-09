@@ -1,0 +1,78 @@
+@model List<RaceDay.Web.Models.ResultViewModel>
+
+@{
+    ViewData["Title"] = "Results";
+    var role = Context.Session.GetString("Role");
+}
+
+<div class="mb-4">
+    <h1>@(role == "Organiser" ? "Event Results" : "My Results")</h1>
+    <p class="text-muted">
+        @(role == "Organiser"
+            ? "Results recorded for your events."
+            : "Your recorded race results.")
+    </p>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        No results are available yet.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Event</th>
+                    @if (role == "Organiser")
+                    {
+                        <th>Participant</th>
+                    }
+                    <th>Finishing Time</th>
+                    <th>Finishing Position</th>
+                    @if (role == "Organiser")
+                    {
+                        <th>Action</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var result in Model)
+                {
+                    <tr>
+                        <td>@result.EventName</td>
+                        @if (role == "Organiser")
+                        {
+                            <td>@result.ParticipantName</td>
+                        }
+                        <td>
+                            @(result.FinishTime?.ToString(@"hh\:mm\:ss") ?? "Not recorded")
+                        </td>
+                        <td>
+                            @(result.FinishingPosition?.ToString() ?? "Not recorded")
+                        </td>
+                        @if (role == "Organiser")
+                        {
+                            <td>
+                                <a asp-controller="Results"
+                                   asp-action="Edit"
+                                   asp-route-id="@result.ResultId"
+                                   class="btn btn-sm btn-primary">
+                                    Edit
+                                </a>
+                            </td>
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

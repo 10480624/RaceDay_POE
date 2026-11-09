@@ -1,0 +1,49 @@
+@model List<RaceDay.Web.Models.EnrolmentViewModel>
+
+@{
+    ViewData["Title"] = "My Enrolments";
+}
+
+<h1>My Enrolments</h1>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        You have not enrolled in any events yet.
+    </div>
+}
+else
+{
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Enrolment ID</th>
+                <th>Event ID</th>
+                <th>Category ID</th>
+                <th>Date Enrolled</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.EnrolmentId</td>
+                    <td>@item.EventId</td>
+                    <td>@item.CategoryId</td>
+                    <td>@item.EnrolmentDate.ToString("dd MMM yyyy")</td>
+                    <td>@item.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<a asp-controller="Events" asp-action="Index" class="btn btn-primary">
+    Browse Events
+</a>
