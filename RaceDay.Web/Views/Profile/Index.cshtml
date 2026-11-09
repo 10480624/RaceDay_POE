@@ -1,0 +1,113 @@
+@model RaceDay.Web.Models.ProfileViewModel
+
+@{
+    ViewData["Title"] = "My Profile";
+}
+
+<div class="mb-4">
+    <h1>My Profile</h1>
+    <p class="text-muted">View and update your personal information.</p>
+</div>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">@TempData["Message"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row">
+    <div class="col-lg-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                @if (!string.IsNullOrWhiteSpace(Model.ProfilePictureUrl))
+                {
+                    <img src="@Model.ProfilePictureUrl" alt="Profile picture"
+                         class="rounded-circle mb-3"
+                         style="width:140px;height:140px;object-fit:cover;" />
+                }
+                else
+                {
+                    <div class="rounded-circle bg-secondary text-white d-flex align-items-center justify-content-center mx-auto mb-3"
+                         style="width:140px;height:140px;font-size:48px;">
+                        @Model.FirstName.FirstOrDefault()
+                    </div>
+                }
+                <h4>@Model.FirstName @Model.LastName</h4>
+                <p class="text-muted">@Model.Email</p>
+                <span class="badge bg-primary">@Model.Role</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <form asp-action="Index" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <h4 class="mb-3">Personal Information</h4>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="FirstName" class="form-label"></label>
+                            <input asp-for="FirstName" class="form-control" />
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="LastName" class="form-label"></label>
+                            <input asp-for="LastName" class="form-control" />
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email address</label>
+                        <input value="@Model.Email" class="form-control" readonly />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DateOfBirth" class="form-label"></label>
+                        <input asp-for="DateOfBirth" type="date" class="form-control" />
+                        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+                    <h4 class="mb-3">Emergency Contact</h4>
+                    <div class="mb-3">
+                        <label asp-for="EmergencyContactName" class="form-label"></label>
+                        <input asp-for="EmergencyContactName" class="form-control" />
+                        <span asp-validation-for="EmergencyContactName" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="EmergencyContactPhone" class="form-label"></label>
+                        <input asp-for="EmergencyContactPhone" class="form-control" />
+                        <span asp-validation-for="EmergencyContactPhone" class="text-danger"></span>
+                    </div>
+
+                    <hr />
+                    <h4 class="mb-3">Additional Information</h4>
+                    <div class="mb-3">
+                        <label asp-for="MedicalConditions" class="form-label"></label>
+                        <textarea asp-for="MedicalConditions" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="MedicalConditions" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label asp-for="ProfilePictureUrl" class="form-label"></label>
+                        <input asp-for="ProfilePictureUrl" class="form-control" />
+                        <span asp-validation-for="ProfilePictureUrl" class="text-danger"></span>
+                        <small class="text-muted">Enter an image URL. Direct uploads are deferred to storage integration.</small>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a asp-controller="Events" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
