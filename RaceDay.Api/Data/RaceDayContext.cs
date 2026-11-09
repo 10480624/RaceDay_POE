@@ -132,6 +132,10 @@ public class RaceDayContext : DbContext
                 .HasColumnName("event_type")
                 .HasColumnType("varchar(20)").IsRequired();
 
+            e.Property(x => x.BannerImageUrl)
+                .HasColumnName("banner_image_url")
+                .HasColumnType("varchar(500)");
+
             e.Property(x => x.CreatedAt)
                 .HasColumnName("created_at")
                 .HasColumnType("datetime")
