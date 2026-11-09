@@ -1,0 +1,13 @@
+@model List<RaceDay.Web.Models.EventViewModel>
+@{ ViewData["Title"]="Organiser Dashboard"; var counts=ViewBag.EnrolmentCounts as Dictionary<int,int> ?? new(); }
+<h1 class="mb-4">Organiser Dashboard</h1>
+<div class="row g-3 mb-4">
+<div class="col-md-4"><div class="card"><div class="card-body"><div class="text-muted">Events created</div><h2>@Model.Count</h2></div></div></div>
+<div class="col-md-4"><div class="card"><div class="card-body"><div class="text-muted">Total enrolments</div><h2>@ViewBag.TotalEnrolments</h2></div></div></div>
+<div class="col-md-4"><div class="card"><div class="card-body"><div class="text-muted">Upcoming events</div><h2>@ViewBag.UpcomingEvents</h2></div></div></div></div>
+<h2 class="h4">Your events</h2>
+@if (!Model.Any()) { <div class="alert alert-info">You have not created any events yet.</div> }
+else { <div class="table-responsive"><table class="table table-striped"><thead><tr><th>Event</th><th>Date</th><th>Location</th><th>Enrolments</th><th>Status</th><th></th></tr></thead><tbody>
+@foreach (var e in Model) { <tr><td>@e.Name</td><td>@e.EventDate.ToString("dd MMM yyyy")</td><td>@e.Location</td><td>@counts.GetValueOrDefault(e.EventId)</td><td>@(e.EventDate.Date >= DateTime.Today ? "Upcoming" : "Past")</td><td><a asp-controller="ManageEnrolments" asp-action="Index" asp-route-eventId="@e.EventId" class="btn btn-sm btn-outline-primary">View enrolments</a></td></tr> }
+</tbody></table></div> }
+<a asp-action="Index" class="btn btn-outline-secondary">Manage events</a>
