@@ -5,6 +5,7 @@
 }
 
 <h1>@Model.Name</h1>
+@if (!string.IsNullOrWhiteSpace(Model.BannerImageUrl)) { <img src="@Model.BannerImageUrl" alt="@Model.Name banner" class="img-fluid rounded mb-3 w-100" style="max-height:360px;object-fit:cover" /> }
 
 <div class="card shadow-sm mt-3 mb-4">
     <div class="card-body">
