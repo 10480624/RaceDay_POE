@@ -34,6 +34,7 @@ public class EventsController : ControllerBase
                 e.Location,
                 e.Distance,
                 e.EventType,
+                e.BannerImageUrl,
                 e.OrganiserId
             })
             .ToListAsync();
@@ -193,7 +194,8 @@ public class EventsController : ControllerBase
             EventDate = request.EventDate.Date,
             Location = request.Location.Trim(),
             Distance = request.Distance,
-            EventType = eventType
+            EventType = eventType,
+            BannerImageUrl = request.BannerImageUrl
         };
 
         _context.Events.Add(eventItem);
@@ -211,6 +213,7 @@ public class EventsController : ControllerBase
                 eventItem.Location,
                 eventItem.Distance,
                 eventItem.EventType,
+                eventItem.BannerImageUrl,
                 eventItem.OrganiserId
             });
     }
@@ -251,6 +254,7 @@ public class EventsController : ControllerBase
         eventItem.Location = request.Location.Trim();
         eventItem.Distance = request.Distance;
         eventItem.EventType = request.EventType.Trim().ToLowerInvariant();
+        eventItem.BannerImageUrl = request.BannerImageUrl;
 
         await _context.SaveChangesAsync();
 
@@ -263,6 +267,7 @@ public class EventsController : ControllerBase
             eventItem.Location,
             eventItem.Distance,
             eventItem.EventType,
+            eventItem.BannerImageUrl,
             eventItem.OrganiserId
         });
     }
@@ -355,6 +360,7 @@ public class CreateEventRequest
     public string Location { get; set; } = string.Empty;
     public decimal Distance { get; set; }
     public string EventType { get; set; } = string.Empty;
+    public string? BannerImageUrl { get; set; }
 }
 
 public class UpdateEventRequest
